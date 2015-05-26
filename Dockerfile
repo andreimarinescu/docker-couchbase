@@ -9,8 +9,9 @@ RUN apt-get update \
 	&& dpkg-reconfigure locales
 
 # Downloading and Installing Couchbase
-ENV CB_VERSION 2.5.1
-ENV CB_FILENAME couchbase-server-enterprise_${CB_VERSION}_x86_64.deb 
+#http://packages.couchbase.com/releases/3.0.1/couchbase-server-community_3.0.1-ubuntu12.04_amd64.deb
+ENV CB_VERSION 3.0.1
+ENV CB_FILENAME couchbase-server-community_${CB_VERSION}-ubuntu12.04_amd64.deb
 ENV CB_SOURCE http://packages.couchbase.com/releases/$CB_VERSION/$CB_FILENAME
 RUN wget -O/tmp/$CB_FILENAME $CB_SOURCE  \ 
 	&& dpkg -i /tmp/$CB_FILENAME  \
@@ -60,7 +61,7 @@ RUN { \
 
 # Lumberjack
 RUN apt-get update \
-	&& apt-get install -yqq wget 
+	&& apt-get install -yqq wget curl
 ENV LUMBERJACK_VERSION 0.3.1
 RUN	wget --no-check-certificate -O/tmp/lumberjack_${LUMBERJACK_VERSION}_amd64.deb https://github.com/lifegadget/lumberjack-builder/raw/master/resources/lumberjack_${LUMBERJACK_VERSION}_amd64.deb \
 	&& dpkg -i /tmp/lumberjack_${LUMBERJACK_VERSION}_amd64.deb \
@@ -70,9 +71,13 @@ COPY resources/logstash-forwarder.conf /app/logstash-forwarder.conf
 COPY resources/logstash-defaults /etc/default/lumberjack
 
 # Add Resources
+ENV CLUSTER_RAMSIZE 600
 ADD resources/couchbase.txt /app/resources/couchbase.txt
 ADD resources/docker.txt /app/resources/docker.txt
 ADD resources/default.conf /app/conf/default.conf
+ADD resources/dev_models.ddoc /app/conf/dev_models.ddoc
+ADD resources/dev_state_document.ddoc /app/conf/dev_state_document.ddoc
 
 ENTRYPOINT ["docker-couchbase"]
 CMD	["start"]
+CMD	["create"]

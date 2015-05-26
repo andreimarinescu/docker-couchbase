@@ -1,0 +1,31 @@
+{
+    "views": {
+      "by_type": {
+        "map": "function (doc, meta) {\n  if (doc.type)\n  \temit(doc.type, doc);\n}"
+      },
+      "by_type_context": {
+        "map": "function (doc, meta) {\n  if (doc.context_id && doc.type && meta.type == 'json')\n  \temit([doc.context_id, doc.type], doc);\n}"
+      },
+      "by_type_id": {
+        "map": "function (doc, meta) {\n  if (doc.type && doc.id)\n  \temit([doc.type, doc.id], doc);\n}"
+      },
+      "by_author": {
+        "map": "function (doc, meta) {\n  if (doc.user_id)\n  \temit(doc.user_id, doc);\n}"
+      },
+      "by_author_lookup": {
+        "map": "function (doc, meta) {\n  var parts = meta.id.split(':');\n  if (parts[2] == 'users')\n\temit(parts[3], doc);\n}"
+      },
+      "by_parent_model": {
+        "map": "function (doc, meta) {\n  var parts = meta.id.split(':');\n  emit(parts[4]+parts[5]+parts[6], doc);\n}"
+      },
+      "by_context": {
+        "map": "function (doc, meta) {\n  var idParts = meta.id.split(':');\n  emit(idParts[1], null);\n}"
+      },
+      "by_model_lookup": {
+        "map": "function (doc, meta) {\n  var keyParts = meta.id.split(':');\n  emit(keyParts[keyParts.length-1], meta.id);\n}"
+      },
+      "by_app": {
+        "map": "function (doc, meta) {\n  if (doc.application_id)\n  \temit(meta.id, null);\n}"
+      }
+    }
+  }

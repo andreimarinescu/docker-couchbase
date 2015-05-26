@@ -157,6 +157,7 @@ case "$1" in
 			cbReplica=`echo $bucketConfig | jsawk -n 'out(this.replica ? this.replica : "0")'`
 			cbFlush=`echo $bucketConfig | jsawk -n 'out(this.flush ? this.flush : "0")'`
 			/opt/couchbase/bin/couchbase-cli bucket-create -c 127.0.0.1:8091 --bucket=$bucket \
+				-u Administrator -p password \
 				--bucket-type=$cbType  \
 				--bucket-ramsize=$cbSize  \
 				--bucket-replica=$cbReplica  \
@@ -168,8 +169,14 @@ case "$1" in
 		echo `GET /buckets | jsawk 'return this.name'`
 		
 		echo "* adding self to new Couchbase cluster";
-		/opt/couchbase/bin/couchbase-cli cluster-init -c 127.0.0.1:8091 --cluster-init-username=$USER --cluster-init-password=$PASSWORD --cluster-init-ramsize=$CLUSTER_RAMSIZE --wait
+		/opt/couchbase/bin/couchbase-cli cluster-init -c 127.0.0.1:8091 -u Administrator -p password --cluster-init-username=$USER --cluster-init-password=$PASSWORD --cluster-init-ramsize=$CLUSTER_RAMSIZE --wait
 		echo "";
+		
+		echo "* adding self to new Couchbase cluster";
+		curl -X PUT -H 'Content-Type: application/json' http://Administrator:password@127.0.0.1:8092/default/_design/dev_models -d @/app/conf/dev_models.ddoc
+		curl -X PUT -H 'Content-Type: application/json' http://Administrator:password@127.0.0.1:8092/state/_design/dev_state_document -d @/app/conf/dev_state_document.ddoc
+		echo "";
+
 		echo "Couchbase is READY!"
 	;;
 	join)

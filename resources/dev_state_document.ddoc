@@ -1,0 +1,10 @@
+{
+    "views": {
+      "all_devices": {
+        "map": "function (doc, meta) {  if (meta.id.indexOf('blg:devices:') !== -1)  emit(doc.id, doc);}"
+      },
+      "by_context": {
+        "map": "function (doc, meta) {  var keyParts = meta.id.split(':');  emit(keyParts[1], null);}"
+      }
+    }
+  }
